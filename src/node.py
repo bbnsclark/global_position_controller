@@ -78,7 +78,7 @@ class Node:
         
         try:
 
-            resp = self.pub_goal(goal)
+            resp = self.pub_goal.publish(goal)
 
             return resp
 
