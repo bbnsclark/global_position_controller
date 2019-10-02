@@ -78,11 +78,13 @@ class Node:
         
         try:
 
+            print(goal)
+
             resp = self.pub_goal.publish(goal)
 
             return resp
 
-        except rospy.ServiceException, e:
+        except:
 
             return "Service call failed"
 
@@ -108,7 +110,7 @@ class Node:
 
             self.goal = self.new_goal
 
-            print('sending goal: X: ' + str(self.new_goal.pose.position.x) + ' Y: ' + str(self.new_goal.pose.position.y) )
+            print(self.new_goal)
 
             reply = self.send_move_base_goal(self.new_goal)
 
