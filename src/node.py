@@ -16,7 +16,7 @@ from std_msgs.msg import String
 from std_msgs.msg import Float64
 from nav_msgs.msg import Odometry
 from gps_common.msg import GPSFix
-from nav_msgs.msg import PoseStamped
+from geometry_msgs.msg import PoseStamped
 from sensor_msgs.msg import LaserScan
 from sensor_msgs.msg import NavSatFix
 from geometry_msgs.msg import Quaternion, Twist

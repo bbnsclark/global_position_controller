@@ -7,7 +7,7 @@ from global_pose import GlobalPose
 from utilities import Utilities
 
 import tf
-from nav_msgs.msg import PoseStamped
+from geometry_msgs.msg import PoseStamped
 
 EAST = 0
 NORT = 1
