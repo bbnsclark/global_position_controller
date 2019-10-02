@@ -40,6 +40,8 @@ class Node:
 
         self.response = GoalPositionResponse()
 
+        self.check_msg = Float64()
+
         self.loop_threshold = 3.0 # used to determine  if position is reached
 
         self.send_threshold = 1.0 # used to determine whether to resend goal or not
@@ -54,6 +56,8 @@ class Node:
 
         self.pub_goal = rospy.Publisher('move_base_simple/goal', PoseStamped, queue_size = 1)
 
+        self.pub_check = rospy.Publisher('controller_check', Float64, queue_size = 1)
+
         rospy.loginfo('Starting global position controller...')
 
 
@@ -64,6 +68,10 @@ class Node:
         self.pose.longitude = msg.longitude
 
         self.pose.heading = msg.dip 
+
+        self.check_msg.data = 1.0
+
+        self.pub_check.publish(self.check_msg)
 
 
     def send_move_base_goal(self, goal):
@@ -81,23 +89,37 @@ class Node:
 
     def goto_position_callback(self, msg):
 
-        distance = 2.0 * loop_threshold
+        print(msg)
 
-        while distance > loop_threshold:
+        self.target_pose.latitude = msg.target_latitude
+
+        self.target_pose.longitude = msg.target_longitude
+
+        self.target_pose.heading = msg.target_heading 
+
+        distance = 2.0 * self.loop_threshold
+
+        while distance > self.loop_threshold:
 
             # first we need to calculate the target global position in local body frame
             self.new_goal, distance = self.controller.calculate_new_goal(self.pose, self.target_pose)
 
-            goal_distance = self.utilities.calculate_pose_distance(self.goal, self.new_goal, send_threshold)
+            goal_distance = self.utilities.calculate_pose_distance(self.goal, self.new_goal, self.send_threshold)
 
-            if goal_distance > send_threshold:
+            print(goal_distance)
+
+            if goal_distance > self.send_threshold:
 
                 self.goal = self.new_goal
 
-                reply = 'x: ' + self.new_goal.pose.position.x + ' y: ' + self.new_goal.pose.position.y
+                reply = 'x: ' + str(self.new_goal.pose.position.x) + ' y: ' + str(self.new_goal.pose.position.y)
                 #reply = self.send_move_base_goal(self.new_goal)
 
-        return self.response
+                print(reply)
+
+            time.sleep(5.0)
+
+        return reply
 
 
 if __name__ == '__main__':

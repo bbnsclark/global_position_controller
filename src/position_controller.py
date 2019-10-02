@@ -41,7 +41,7 @@ class PositionController:
 
             y = calc_y
 
-        quaternion = tf.transformations.quaternion_from_euler(0.0, 0.0, theta)
+        quaternion = tf.transformations.quaternion_from_euler(0.0, 0.0, 0.0)
 
         self.goal.pose.position.x = x
 
@@ -55,4 +55,4 @@ class PositionController:
 
         self.goal.pose.orientation.w = quaternion[3]
 
-        return self.goal
+        return self.goal, distance

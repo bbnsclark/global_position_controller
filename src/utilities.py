@@ -9,7 +9,7 @@ import tf
 from geometry_msgs.msg import PoseStamped
 
 EAST = 0
-NORT = 1
+NORTH = 1
 MAX_DISTANCE = 10.0
 
 class Utilities:
