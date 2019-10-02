@@ -42,9 +42,9 @@ class Node:
 
         self.check_msg = Float64()
 
-        self.loop_threshold = 3.0 # used to determine  if position is reached
+        self.loop_threshold = 5.0 # used to determine  if position is reached
 
-        self.send_threshold = 1.0 # used to determine whether to resend goal or not
+        self.send_threshold = 2.0 # used to determine whether to resend goal or not
 
         rospy.init_node('GLOBAL_POS')
 
@@ -89,8 +89,6 @@ class Node:
 
     def goto_position_callback(self, msg):
 
-        print(msg)
-
         self.target_pose.latitude = msg.target_latitude
 
         self.target_pose.longitude = msg.target_longitude
@@ -99,25 +97,22 @@ class Node:
 
         distance = 2.0 * self.loop_threshold
 
-        while distance > self.loop_threshold:
+        # while distance > self.loop_threshold:
 
-            # first we need to calculate the target global position in local body frame
-            self.new_goal, distance = self.controller.calculate_new_goal(self.pose, self.target_pose)
+        # first we need to calculate the target global position in local body frame
+        self.new_goal, distance = self.controller.calculate_new_goal(self.pose, self.target_pose)
 
-            goal_distance = self.utilities.calculate_pose_distance(self.goal, self.new_goal, self.send_threshold)
+        goal_distance = self.utilities.calculate_pose_distance(self.goal, self.new_goal, self.send_threshold)
 
-            print(goal_distance)
+        if goal_distance > self.send_threshold:
 
-            if goal_distance > self.send_threshold:
+            self.goal = self.new_goal
 
-                self.goal = self.new_goal
+            print('sending goal: X: ' + str(self.new_goal.pose.position.x) + ' Y: ' + str(self.new_goal.pose.position.y) )
 
-                reply = 'x: ' + str(self.new_goal.pose.position.x) + ' y: ' + str(self.new_goal.pose.position.y)
-                #reply = self.send_move_base_goal(self.new_goal)
+            reply = self.send_move_base_goal(self.new_goal)
 
-                print(reply)
-
-            time.sleep(5.0)
+        # time.sleep(5.0)
 
         return reply
 
