@@ -31,9 +31,9 @@ class PositionController:
 
         if distance >= MAX_DISTANCE:
 
-            x = (calc_distance / MAX_DISTANCE ) * calc_x
+            x = (MAX_DISTANCE / calc_distance ) * calc_x
 
-            y = (calc_distance / MAX_DISTANCE ) * calc_y
+            y = (MAX_DISTANCE / calc_distance ) * calc_y
 
         else:
 
@@ -41,7 +41,7 @@ class PositionController:
 
             y = calc_y
 
-        quaternion = tf.transformations.quaternion_from_euler(0.0, 0.0, target.heading)
+        quaternion = tf.transformations.quaternion_from_euler(0.0, 0.0, 0.0)
 
         self.goal.header.frame_id = "base_link"
 
