@@ -43,6 +43,8 @@ class PositionController:
 
         quaternion = tf.transformations.quaternion_from_euler(0.0, 0.0, 0.0)
 
+        self.goal.header.frame_id = "base_link"
+
         self.goal.pose.position.x = x
 
         self.goal.pose.position.y = y
