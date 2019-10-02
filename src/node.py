@@ -48,15 +48,13 @@ class Node:
 
         self.rate = 0.1
 
-        self.sub_diag = rospy.Subscriber('/gps_fix', GPSFix, self.gps_callback)
+        self.sub_gps = rospy.Subscriber('/gps_fix', GPSFix, self.gps_callback)
 
         self.srv_cmd_position = rospy.Service('goto_position', GoalPosition, self.goto_position_callback)
 
-        self.client = rospy.ServiceProxy('move_base_simple/goal', PoseStamped)
+        self.client = rospy.Publisher('move_base_simple/goal', PoseStamped)
 
         rospy.loginfo('Starting state observer...')
-
-        self.diag = Diagnostics()
 
 
     def gps_callback(self, msg):
