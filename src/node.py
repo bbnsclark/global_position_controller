@@ -52,9 +52,9 @@ class Node:
 
         self.srv_cmd_position = rospy.Service('goto_position', GoalPosition, self.goto_position_callback)
 
-        self.client = rospy.Publisher('move_base_simple/goal', PoseStamped)
+        self.pub_goal = rospy.Publisher('move_base_simple/goal', PoseStamped, queue_size = 1)
 
-        rospy.loginfo('Starting state observer...')
+        rospy.loginfo('Starting global position controller...')
 
 
     def gps_callback(self, msg):
@@ -70,7 +70,7 @@ class Node:
         
         try:
 
-            resp = self.client(goal)
+            resp = self.pub_goal(goal)
 
             return resp
 
