@@ -78,15 +78,13 @@ class Node:
         
         try:
 
-            print(goal)
+            self.pub_goal.publish(goal)
 
-            resp = self.pub_goal.publish(goal)
-
-            return resp
+            return "Goal published"
 
         except:
 
-            return "Service call failed"
+            return "goal setting failed"
 
 
     def goto_position_callback(self, msg):
@@ -95,7 +93,7 @@ class Node:
 
         self.target_pose.longitude = msg.target_longitude
 
-        self.target_pose.heading = msg.target_heading 
+        self.target_pose.heading = msg.target_heading
 
         distance = 2.0 * self.loop_threshold
 
@@ -110,11 +108,9 @@ class Node:
 
                 self.goal = self.new_goal
 
-                print(self.new_goal)
-
                 reply = self.send_move_base_goal(self.new_goal)
 
-            time.sleep(5.0)
+            time.sleep(2.0)
 
         return reply
 
