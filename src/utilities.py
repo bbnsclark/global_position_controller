@@ -46,7 +46,7 @@ class Utilities:
         # if the current pose exists, return the distance between poses
         try:
 
-            dx = target.pose.position.x - target.pose.position.y
+            dx = target.pose.position.x - target.pose.position.x
 
             dy = target.pose.position.y - target.pose.position.y
 

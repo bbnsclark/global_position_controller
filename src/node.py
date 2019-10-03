@@ -80,11 +80,11 @@ class Node:
 
             self.pub_goal.publish(goal)
 
-            return "Goal published"
+            return "Goal set"
 
         except:
 
-            return "goal setting failed"
+            return "Goal setting failed"
 
 
     def goto_position_callback(self, msg):
@@ -102,7 +102,11 @@ class Node:
             # first we need to calculate the target global position in local body frame
             self.new_goal, distance = self.controller.calculate_new_goal(self.pose, self.target_pose)
 
+            print("New goal:")
             print(self.new_goal)
+            
+            print("Distance to target:")
+            print(distance)
 
             goal_distance = self.utilities.calculate_pose_distance(self.goal, self.new_goal, self.send_threshold)
 
