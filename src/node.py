@@ -108,16 +108,16 @@ class Node:
             print("Distance to target:")
             print(distance)
 
-            goal_distance = self.utilities.calculate_pose_distance(self.goal, self.new_goal, self.send_threshold)
+            # goal_distance = self.utilities.calculate_pose_distance(self.goal, self.new_goal, self.send_threshold)
             
-            print("Goal distance:")
-            print(goal_distance)
+            # print("Goal distance:")
+            # print(goal_distance)
 
-            if goal_distance > self.send_threshold:
+            # if goal_distance > self.send_threshold:
 
-                self.goal = self.new_goal
+            #     self.goal = self.new_goal
 
-                reply = self.send_move_base_goal(self.new_goal)
+            reply = self.send_move_base_goal(self.new_goal)
 
             time.sleep(5.0)
 
