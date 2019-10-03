@@ -44,16 +44,10 @@ class Utilities:
     def calculate_pose_distance(self, init, target, threshold):
 
         # if the current pose exists, return the distance between poses
-        try:
+        dx = target.pose.position.x - init.pose.position.x
 
-            dx = target.pose.position.x - init.pose.position.x
+        dy = target.pose.position.y - init.pose.position.y
 
-            dy = target.pose.position.y - init.pose.position.y
-
-            d = math.sqrt(math.pow(dx, 2.0) + math.pow(dy, 2.0))
-
-        except:
-
-            d = 3.0 * threshold
+        d = math.sqrt(math.pow(dx, 2.0) + math.pow(dy, 2.0))
 
         return d
