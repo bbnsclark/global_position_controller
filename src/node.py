@@ -119,7 +119,7 @@ class Node:
 
             print(self.new_goal)
             
-            # reply = self.send_move_base_goal(self.new_goal)
+            reply = self.send_move_base_goal(self.new_goal)
 
             time.sleep(5.0)
 
