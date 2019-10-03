@@ -46,6 +46,8 @@ class Node:
 
         self.send_threshold = 2.0 # used to determine whether to resend goal or not
 
+        self.loop_control = True
+
         rospy.init_node('GLOBAL_POS')
 
         self.rate = 0.1
@@ -74,19 +76,6 @@ class Node:
         self.pub_check.publish(self.check_msg)
 
 
-    def send_move_base_goal(self, goal):
-        
-        try:
-
-            self.pub_goal.publish(goal)
-
-            return "Goal set"
-
-        except:
-
-            return "Goal setting failed"
-
-
     def goto_position_callback(self, msg):
 
         self.target_pose.latitude = msg.target_latitude
@@ -97,31 +86,23 @@ class Node:
 
         distance = 2.0 * self.loop_threshold
 
-        while distance > self.loop_threshold:
+        # now we implement a SUPER dumb time-base position control loop
+        while distance > self.loop_threshold and self.loop_control:
 
-            # first we need to calculate the target global position in local body frame
+            # first we calculate the target global position in local body frame
             self.new_goal, distance = self.controller.calculate_new_goal(self.pose, self.target_pose)
-
-            print("New goal:")
-            print(self.new_goal)
-
-            print("Distance to target:")
-            print(distance)
-
-            # goal_distance = self.utilities.calculate_pose_distance(self.goal, self.new_goal, self.send_threshold)
             
-            # print("Goal distance:")
-            # print(goal_distance)
+            # publish the goal and...
+            self.pub_goal.publish(self.new_goal)
 
-            # if goal_distance > self.send_threshold:
-
-            #     self.goal = self.new_goal
-
-            print(self.new_goal)
-            
-            reply = self.send_move_base_goal(self.new_goal)
-
+            # wait 5 seconds...as I said...dumb
             time.sleep(5.0)
+
+        # once the platform has reached its goal we stop move_base
+        self.pub_goal.publish(self.pose)
+
+        # and return the status
+        self.response.status = reply
 
         return reply
 

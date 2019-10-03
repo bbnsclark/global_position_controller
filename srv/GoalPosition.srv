@@ -2,6 +2,4 @@ float64 target_latitude
 float64 target_longitude
 float64 target_heading
 ---
-float64 final_latitude
-float64 final_longitude
-float64 final_heading
+string status
