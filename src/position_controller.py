@@ -42,7 +42,7 @@ class PositionController:
 
             distance = calc_distance
 
-        theta = math.atan2(y/x)
+        # theta = math.atan2(y/x)
 
         quaternion = tf.transformations.quaternion_from_euler(0.0, 0.0, 0.0)
 
