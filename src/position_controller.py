@@ -26,21 +26,21 @@ class PositionController:
         # converting the heading to radians 
         calc_x, calc_y, calc_distance = self.utilities.calculate_distance(init, target)
 
-        if calc_distance > MAX_DISTANCE:
+        # if calc_distance > MAX_DISTANCE:
 
-            x = (MAX_DISTANCE / calc_distance ) * calc_x
+        #     x = (MAX_DISTANCE / calc_distance ) * calc_x
 
-            y = (MAX_DISTANCE / calc_distance ) * calc_y
+        #     y = (MAX_DISTANCE / calc_distance ) * calc_y
 
-            distance = MAX_DISTANCE
+        #     distance = MAX_DISTANCE
 
-        else:
+        # else:
 
-            x = calc_x
+        x = calc_x
 
-            y = calc_y
+        y = calc_y
 
-            distance = calc_distance
+        distance = calc_distance
 
         # theta = math.atan2(y/x)
 
