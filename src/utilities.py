@@ -34,7 +34,7 @@ class Utilities:
         calc_distance = math.sqrt(math.pow(east, 2.0) + math.pow(north, 2.0))
 
         # calculating the goal position in body frame
-        calc_x = north * math.cos(theta) + east * math.sin(theta))
+        calc_x = north * math.cos(theta) + east * math.sin(theta)
         
         calc_y = north * math.sin(theta) - east * math.cos(theta)
 
