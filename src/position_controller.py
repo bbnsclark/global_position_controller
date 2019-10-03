@@ -26,7 +26,7 @@ class PositionController:
         # converting the heading to radians 
         calc_x, calc_y, calc_distance = self.utilities.calculate_distance(init, target)
 
-        if calc_distance >= MAX_DISTANCE:
+        if calc_distance > MAX_DISTANCE:
 
             x = (MAX_DISTANCE / calc_distance ) * calc_x
 
@@ -41,6 +41,8 @@ class PositionController:
             y = calc_y
 
             distance = calc_distance
+
+        theta = math.atan2(y/x)
 
         quaternion = tf.transformations.quaternion_from_euler(0.0, 0.0, 0.0)
 
