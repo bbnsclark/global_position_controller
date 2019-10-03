@@ -95,22 +95,24 @@ class Node:
 
         self.target_pose.heading = msg.target_heading
 
-        distance = 2.0 * self.loop_threshold
+        # distance = 2.0 * self.loop_threshold
 
-        while distance > self.loop_threshold:
+        # while distance > self.loop_threshold:
 
             # first we need to calculate the target global position in local body frame
-            self.new_goal, distance = self.controller.calculate_new_goal(self.pose, self.target_pose)
+        self.new_goal, distance = self.controller.calculate_new_goal(self.pose, self.target_pose)
 
-            goal_distance = self.utilities.calculate_pose_distance(self.goal, self.new_goal, self.send_threshold)
+        print(self.new_goal)
 
-            if goal_distance > self.send_threshold:
+            # goal_distance = self.utilities.calculate_pose_distance(self.goal, self.new_goal, self.send_threshold)
 
-                self.goal = self.new_goal
+            # if goal_distance > self.send_threshold:
 
-                reply = self.send_move_base_goal(self.new_goal)
+            #     self.goal = self.new_goal
 
-            time.sleep(2.0)
+        reply = self.send_move_base_goal(self.new_goal)
+
+            # time.sleep(.0)
 
         return reply
 
