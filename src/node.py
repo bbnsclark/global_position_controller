@@ -84,6 +84,8 @@ class Node:
 
         self.target_pose.heading = msg.target_heading
 
+        print(self.target_pose)
+
         distance = 2.0 * self.loop_threshold
 
         # now we implement a SUPER dumb time-base position control loop
@@ -94,6 +96,8 @@ class Node:
             
             # publish the goal and...
             self.pub_goal.publish(self.new_goal)
+
+            print(self.new_goal)
 
             # wait 5 seconds...as I said...dumb
             time.sleep(5.0)
