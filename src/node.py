@@ -71,6 +71,8 @@ class Node:
 
     def manage_callback(self, msg):
 
+        print(msg)
+        
         self.control_status = msg
 
 
