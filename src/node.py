@@ -106,7 +106,7 @@ class Node:
         self.pub_goal.publish(self.pose)
 
         # and return the status
-        self.response.status = reply
+        self.response.status = "Done"
 
         return reply
 
