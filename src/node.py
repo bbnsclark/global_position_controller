@@ -66,6 +66,7 @@ class Node:
         self.pub_check = rospy.Publisher('controller_check', Float64, queue_size = 1)
 
         rospy.loginfo('Starting global position controller...')
+        
 
     def manage_callback(self, msg):
 
