@@ -95,7 +95,9 @@ class Node:
 
         self.target_pose.heading = msg.target_heading
 
-        print(self.target_pose)
+        print(self.target_pose.latitude)
+
+        print(self.target_pose.longitude)
 
         distance = 2.0 * self.loop_threshold
 
