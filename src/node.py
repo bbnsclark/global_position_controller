@@ -71,7 +71,7 @@ class Node:
 
     def manage_callback(self, msg):
 
-        self.control_status = msg.data
+        self.control_status = msg
 
 
     def gps_callback(self, msg):
@@ -117,7 +117,7 @@ class Node:
                 self.client_goal.cancel_goal()
 
                 self.client_goal.cancel_all_goals()
-                
+
                 time.sleep(2.0)
 
             elif self.control_status == 'run':
