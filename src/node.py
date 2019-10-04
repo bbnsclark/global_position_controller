@@ -114,6 +114,10 @@ class Node:
             elif self.control_status == 'pause':
 
                 # we wait 2 seconds while paused
+                self.client_goal.cancel_goal()
+
+                self.client_goal.cancel_all_goals()
+                
                 time.sleep(2.0)
 
             elif self.control_status == 'run':
@@ -128,9 +132,9 @@ class Node:
                 time.sleep(5.0)
 
         # once the platform has reached its goal we cancel all move_base goals
-        self.client.cancel_goal()
+        self.client_goal.cancel_goal()
 
-        self.client.cancel_all_goals()
+        self.client_goal.cancel_all_goals()
 
         # and return the status
         self.response.status = "Done"
