@@ -19,6 +19,7 @@ from gps_common.msg import GPSFix
 from geometry_msgs.msg import PoseStamped
 from sensor_msgs.msg import LaserScan
 from sensor_msgs.msg import NavSatFix
+from move_base_msgs.msg import MoveBaseAction
 from geometry_msgs.msg import Quaternion, Twist
 from global_position_controller.srv import GoalPosition, GoalPositionResponse
 
@@ -46,21 +47,29 @@ class Node:
 
         self.send_threshold = 2.0 # used to determine whether to resend goal or not
 
-        self.loop_control = True
+        self.control_status = 'run'
 
         rospy.init_node('GLOBAL_POS')
 
         self.rate = 0.1
 
-        self.sub_gps = rospy.Subscriber('/gps_fix', GPSFix, self.gps_callback)
+        self.sub_gps = rospy.Subscriber('gps_fix', GPSFix, self.gps_callback)
+
+        self.sub_manage = rospy.Subscriber('manage_controller', String, self.manage_callback)
 
         self.srv_cmd_position = rospy.Service('goto_position', GoalPosition, self.goto_position_callback)
 
         self.pub_goal = rospy.Publisher('move_base_simple/goal', PoseStamped, queue_size = 1)
 
+        self.client_goal = actionlib.SimpleActionClient('move_base', MoveBaseAction)
+
         self.pub_check = rospy.Publisher('controller_check', Float64, queue_size = 1)
 
         rospy.loginfo('Starting global position controller...')
+
+    def manage_callback(self, msg):
+
+        self.control_status = msg.data
 
 
     def gps_callback(self, msg):
@@ -89,21 +98,37 @@ class Node:
         distance = 2.0 * self.loop_threshold
 
         # now we implement a SUPER dumb time-base position control loop
-        while distance > self.loop_threshold and self.loop_control:
+        while distance > self.loop_threshold:
 
-            # first we calculate the target global position in local body frame
-            self.new_goal, distance = self.controller.calculate_new_goal(self.pose, self.target_pose)
-            
-            # publish the goal and...
-            self.pub_goal.publish(self.new_goal)
+            if self.control_status == 'stop':
 
-            print(self.new_goal)
+                #if we need to stop the controller, we get it ready for next goal and break the loop
+                self.control_status = 'run'
 
-            # wait 5 seconds...as I said...dumb
-            time.sleep(5.0)
+                break
 
-        # once the platform has reached its goal we stop move_base
-        self.pub_goal.publish(self.pose)
+            elif self.control_status == 'pause':
+
+                # we wait 2 seconds while paused
+                time.sleep(2.0)
+
+            elif self.control_status == 'run':
+
+                # first we calculate the target global position in local body frame
+                self.new_goal, distance = self.controller.calculate_new_goal(self.pose, self.target_pose)
+                
+                # publish the goal and...
+                self.pub_goal.publish(self.new_goal)
+
+                print(self.new_goal)
+
+                # wait 5 seconds...as I said...dumb
+                time.sleep(5.0)
+
+        # once the platform has reached its goal we cancel all move_base goals
+        self.client.cancel_goal()
+
+        self.client.cancel_all_goals()
 
         # and return the status
         self.response.status = "Done"
