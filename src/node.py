@@ -141,7 +141,7 @@ class Node:
         # and return the status
         self.response.status = "Done"
 
-        return reply
+        return self.response
 
 
 if __name__ == '__main__':
