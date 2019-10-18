@@ -89,6 +89,8 @@ class Node:
 
     def goto_position_callback(self, msg):
 
+        self.control_status = 'run'
+
         self.target_pose.latitude = msg.target_latitude
 
         self.target_pose.longitude = msg.target_longitude
@@ -107,8 +109,7 @@ class Node:
             if self.control_status == 'stop':
 
                 #if we need to stop the controller, we get it ready for next goal and break the loop
-                self.control_status = 'run'
-
+                
                 break
 
             elif self.control_status == 'pause':
