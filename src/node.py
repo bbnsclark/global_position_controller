@@ -106,6 +106,8 @@ class Node:
         # now we implement a SUPER dumb time-base position control loop
         while distance > self.loop_threshold:
 
+            print(self.control_status)
+
             if self.control_status == 'stop':
 
                 #if we need to stop the controller, we get it ready for next goal and break the loop
