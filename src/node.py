@@ -140,6 +140,8 @@ class Node:
 
         self.client_goal.cancel_all_goals()
 
+        print('done')
+
         # and return the status
         self.response.status = "Done"
 
