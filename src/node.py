@@ -73,7 +73,7 @@ class Node:
 
         print(msg)
         
-        self.control_status = msg
+        self.control_status = msg.data
 
 
     def gps_callback(self, msg):
