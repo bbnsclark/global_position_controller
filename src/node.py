@@ -70,8 +70,6 @@ class Node:
         
 
     def manage_callback(self, msg):
-
-        print(msg)
         
         self.control_status = msg.data
 
@@ -106,8 +104,6 @@ class Node:
         # now we implement a SUPER dumb time-base position control loop
         while distance > self.loop_threshold:
 
-            print(self.control_status)
-
             if self.control_status == 'stop':
 
                 #if we need to stop the controller, we get it ready for next goal and break the loop
@@ -139,8 +135,6 @@ class Node:
         self.client_goal.cancel_goal()
 
         self.client_goal.cancel_all_goals()
-
-        print('done')
 
         # and return the status
         self.response.status = "Done"
