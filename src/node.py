@@ -108,8 +108,6 @@ class Node:
 
             if self.control_status == 'stop':
 
-                #if we need to stop the controller, we get it ready for next goal and break the loop
-                
                 break
 
             elif self.control_status == 'pause':
@@ -129,7 +127,7 @@ class Node:
                 # publish the goal and...
                 self.pub_goal.publish(self.new_goal)
 
-                # wait 5 seconds...as I said...dumb
+                # wait 5 seconds
                 time.sleep(5.0)
 
         # once the platform has reached its goal we cancel all move_base goals

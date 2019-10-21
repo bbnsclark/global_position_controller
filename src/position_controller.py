@@ -42,9 +42,18 @@ class PositionController:
 
             distance = calc_distance
 
-        # theta = math.atan2(y/x)
+        theta = (2.0 * math.pi - math.atan2(y, x)))
 
-        quaternion = tf.transformations.quaternion_from_euler(0.0, 0.0, 0.0)
+        # here we make sure we align the rover with the 
+        if (theta >= math.pi / 2.0) and ((theta <= 3.0 * math.pi / 2.0)):
+
+            theta = theta + math.pi
+
+            x = 0.0
+
+            y = 0.0
+
+        quaternion = tf.transformations.quaternion_from_euler(0.0, 0.0, theta)
 
         self.goal.header.frame_id = "base_link"
 
@@ -61,3 +70,5 @@ class PositionController:
         self.goal.pose.orientation.w = quaternion[3]
 
         return self.goal, distance
+
+    
