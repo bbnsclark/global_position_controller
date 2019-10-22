@@ -32,6 +32,8 @@ class PositionController:
 
             theta = (2.0 * math.pi - target.heading)
 
+            distance = 0.0
+
         else:
 
             calc_x, calc_y, calc_distance = self.utilities.calculate_distance(init, target)
