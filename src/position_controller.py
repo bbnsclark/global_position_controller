@@ -23,35 +23,51 @@ class PositionController:
 
     def calculate_new_goal(self, init, target):
 
-        # converting the heading to radians 
-        calc_x, calc_y, calc_distance = self.utilities.calculate_distance(init, target)
-
-        if calc_distance > MAX_DISTANCE:
-
-            x = (MAX_DISTANCE / calc_distance ) * calc_x
-
-            y = (MAX_DISTANCE / calc_distance ) * calc_y
-
-            distance = MAX_DISTANCE
-
-        else:
-
-            x = calc_x
-
-            y = calc_y
-
-            distance = calc_distance
-
-        theta = (2.0 * math.pi - math.atan2(y, x)))
-
-        # here we make sure we align the rover with the 
-        if (theta >= math.pi / 2.0) and ((theta <= 3.0 * math.pi / 2.0)):
-
-            theta = theta + math.pi
+        # if the goal is stationary:
+        if target.latitude > 180 or target.longitude > 180:
 
             x = 0.0
 
             y = 0.0
+
+            theta = (2.0 * math.pi - target.heading))
+
+        else:
+
+            calc_x, calc_y, calc_distance = self.utilities.calculate_distance(init, target)
+
+            if calc_distance > MAX_DISTANCE:
+
+                x = (MAX_DISTANCE / calc_distance ) * calc_x
+
+                y = (MAX_DISTANCE / calc_distance ) * calc_y
+
+                distance = MAX_DISTANCE
+
+            else:
+
+                x = calc_x
+
+                y = calc_y
+
+                distance = calc_distance
+
+            if target.heading < 0:
+
+                theta = (2.0 * math.pi - math.atan2(y, x)))
+
+                # here we make sure we align the rover with the 
+                if (theta >= math.pi / 2.0) and ((theta <= 3.0 * math.pi / 2.0)):
+
+                    theta = theta + math.pi
+
+                    x = 0.0
+
+                    y = 0.0
+
+            else:
+
+                theta = (2.0 * math.pi - target.heading))
 
         quaternion = tf.transformations.quaternion_from_euler(0.0, 0.0, theta)
 
