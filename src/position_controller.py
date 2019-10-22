@@ -30,7 +30,7 @@ class PositionController:
 
             y = 0.0
 
-            theta = (2.0 * math.pi - target.heading))
+            theta = (2.0 * math.pi - target.heading)
 
         else:
 
@@ -54,10 +54,10 @@ class PositionController:
 
             if target.heading < 0:
 
-                theta = (2.0 * math.pi - math.atan2(y, x)))
+                theta = (2.0 * math.pi - math.atan2(y, x))
 
                 # here we make sure we align the rover with the 
-                if (theta >= math.pi / 2.0) and ((theta <= 3.0 * math.pi / 2.0)):
+                if (theta >= math.pi / 2.0) and (theta <= 3.0 * math.pi / 2.0):
 
                     theta = theta + math.pi
 
@@ -67,7 +67,7 @@ class PositionController:
 
             else:
 
-                theta = (2.0 * math.pi - target.heading))
+                theta = (2.0 * math.pi - target.heading)
 
         quaternion = tf.transformations.quaternion_from_euler(0.0, 0.0, theta)
 
