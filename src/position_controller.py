@@ -56,7 +56,7 @@ class PositionController:
 
             if target.heading < 0:
 
-                theta = (2.0 * math.pi - math.atan2(y, x))
+                theta = (2.0 * math.pi - (math.atan2(y, x)  - init.heading))
 
             else:
 
@@ -66,7 +66,7 @@ class PositionController:
         print('init:')
         print(init.heading)
         print('target:')
-        print(target.heading)
+        print(theta) * 180 / math.pi
 
         quaternion = tf.transformations.quaternion_from_euler(0.0, 0.0, theta)
 
