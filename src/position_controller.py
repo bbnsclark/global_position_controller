@@ -72,9 +72,9 @@ class PositionController:
 
         self.goal.header.frame_id = "base_link"
 
-        self.goal.pose.position.x = x
+        self.goal.pose.position.x = x * math.cos(theta) - y * sin(theta)
 
-        self.goal.pose.position.y = y
+        self.goal.pose.position.y = x * math.sin(theta) + y * cos(theta)
 
         self.goal.pose.orientation.x = quaternion[0]
 
