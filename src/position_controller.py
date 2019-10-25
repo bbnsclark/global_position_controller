@@ -30,7 +30,7 @@ class PositionController:
 
             y = 0.0
 
-            theta = (2.0 * math.pi - target.heading)
+            theta = (2.0 * math.pi - (target.heading - init.heading))
 
             distance = 0.0
 
@@ -60,16 +60,13 @@ class PositionController:
 
             else:
 
-                theta = (2.0 * math.pi - target.heading)
+                theta = (2.0 * math.pi - (target.heading - init.heading))
 
-            # # here we make sure we align the rover with the 
-            # if (theta >= math.pi / 2.0) and (theta <= 3.0 * math.pi / 2.0):
-
-            #     theta = theta + math.pi
-
-            #     x = 0.0
-
-            #     y = 0.0
+        print('headings:')
+        print('init:')
+        print(init.heading)
+        print('target:')
+        print(target.heading)
 
         quaternion = tf.transformations.quaternion_from_euler(0.0, 0.0, theta)
 
