@@ -56,7 +56,7 @@ class PositionController:
 
             if target.heading < 0:
 
-                theta = (2.0 * math.pi - (math.atan2(y, x)  - init.heading))
+                theta = (2.0 * math.pi - math.atan2(y, x))
 
             else:
 
@@ -66,15 +66,15 @@ class PositionController:
         print('init:')
         print(init.heading)
         print('target:')
-        print(theta) * 180 / math.pi
+        print(theta* 180 / math.pi) 
 
         quaternion = tf.transformations.quaternion_from_euler(0.0, 0.0, theta)
 
         self.goal.header.frame_id = "base_link"
 
-        self.goal.pose.position.x = x * math.cos(init.heading) - y * math.sin(init.heading)
+        self.goal.pose.position.x = x
 
-        self.goal.pose.position.y = x * math.sin(init.heading) + y * math.cos(init.heading)
+        self.goal.pose.position.y = y
 
         self.goal.pose.orientation.x = quaternion[0]
 

@@ -80,7 +80,7 @@ class Node:
 
         self.pose.longitude = msg.longitude
 
-        self.pose.heading = msg.dip 
+        self.pose.heading = msg.dip * math.pi / 180.0
 
         self.check_msg.data = 1.0
 
