@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import time
+import math
 import numpy as np
 from datetime import datetime
 from math import pi, cos, sin
