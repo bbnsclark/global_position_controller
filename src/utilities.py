@@ -20,7 +20,7 @@ class Utilities:
 
     def calculate_distance(self, init, target):
 
-        theta = math.pi * init.heading / 180.0
+        theta = init.heading
 
         init_utm = utm.from_latlon(init.latitude, init.longitude)
 
@@ -34,9 +34,9 @@ class Utilities:
         calc_distance = math.sqrt(math.pow(east, 2.0) + math.pow(north, 2.0))
 
         # calculating the goal position in body frame
-        calc_x = north * math.cos(theta) - east * math.sin(theta)
+        calc_x = north * math.cos(theta) + east * math.sin(theta)
         
-        calc_y = - north * math.sin(theta) - east * math.cos(theta)
+        calc_y = north * math.sin(theta) - east * math.cos(theta)
 
         return calc_x, calc_y, calc_distance
 
