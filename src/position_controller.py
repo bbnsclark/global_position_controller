@@ -66,7 +66,7 @@ class PositionController:
         print('init:')
         print(init.heading)
         print('target:')
-        print(theta* 180 / math.pi) 
+        print(theta) 
 
         quaternion = tf.transformations.quaternion_from_euler(0.0, 0.0, theta)
 

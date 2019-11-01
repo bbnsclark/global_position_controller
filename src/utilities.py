@@ -20,7 +20,7 @@ class Utilities:
 
     def calculate_distance(self, init, target):
 
-        theta = init.heading
+        theta = -init.heading
 
         init_utm = utm.from_latlon(init.latitude, init.longitude)
 
