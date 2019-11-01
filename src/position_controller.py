@@ -56,7 +56,7 @@ class PositionController:
 
             if target.heading < 0:
 
-                theta = math.atan2(y, x)
+                theta = (- math.atan2(y, x))
 
             else:
 
