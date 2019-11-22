@@ -108,6 +108,10 @@ class Node:
         while distance > self.loop_threshold:
 
             if self.control_status == 'stop':
+                
+                self.client_goal.cancel_goal()
+
+                self.client_goal.cancel_all_goals()
 
                 break
 
