@@ -129,7 +129,7 @@ class Node:
                 self.pub_goal.publish(self.new_goal)
 
             # wait 5 seconds
-            time.sleep(1.0)
+            time.sleep(10.0)
 
         # once the platform has reached its goal we cancel all move_base goals
         self.client_goal.cancel_goal()
