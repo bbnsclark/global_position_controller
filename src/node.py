@@ -60,7 +60,7 @@ class Node:
 
         self.check_msg = Float64()
 
-        self.loop_threshold = 1.0 # used to determine  if position is reached
+        self.loop_threshold = 3.0 # used to determine  if position is reached
 
         self.send_threshold = 1.0 # used to determine whether to resend goal or not
 
