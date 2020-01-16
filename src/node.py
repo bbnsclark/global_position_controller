@@ -60,9 +60,9 @@ class Node:
 
         self.check_msg = Float64()
 
-        self.loop_threshold = 2.0 # used to determine  if position is reached
+        self.loop_threshold = 1.0 # used to determine  if position is reached
 
-        self.send_threshold = 2.0 # used to determine whether to resend goal or not
+        self.send_threshold = 1.0 # used to determine whether to resend goal or not
 
         self.control_status = 'run'
 
@@ -200,7 +200,7 @@ class Node:
 
                 self.client_goal.cancel_all_goals()
 
-                time.sleep(2.0)
+                rospy.sleep(2.0)
 
             elif self.control_status == 'run':
 
@@ -217,34 +217,34 @@ class Node:
 
                     self.client_goal.cancel_all_goals()
 
-                    # if we are stuck in place, let's cancel all goals, and clear out costmap to try to recover
-                    self.clear_costmaps_srv(EmptyRequest())
-
-                    time.sleep(2.0)
-
-                    rospy.logwarn('clear costmap recovery activated')
-
                     if self.stuck_count > 5:
 
-                        rospy.logwarn('rotation recovery activated')
+                        # if we are stuck in place, let's cancel all goals, and clear out costmap to try to recover
+                        self.clear_costmaps_srv(EmptyRequest())
 
-                        self.controller.get_recovery_goal()
+                        rospy.sleep(1.0)
 
-                        self.stuck_count = 0
+                        rospy.logwarn('clear costmap recovery activated')
 
-                    time.sleep(3.0)
+                        if self.stuck_count > 7:
 
+                            rospy.logwarn('rotation recovery activated')
 
-                if math.fabs(self.distance - self.current_distance) >= self.send_threshold:
+                            recovery = self.controller.get_recovery_goal(self.pose, self.target_pose)
+
+                            self.pub_goal.publish(recovery)
+
+                            self.clear_costmaps_srv(EmptyRequest())
+
+                            rospy.sleep(10.0)
+
+                            self.stuck_count = 0
+
+                else:
 
                     self.pub_goal.publish(self.new_goal)
 
-                    self.current_distance = 0.0
-
-                    # wait 5 seconds
-                    time.sleep(2.0)
-
-                
+                rospy.sleep(3.0)
 
         # once the platform has reached its goal we cancel all move_base goals
         self.client_goal.cancel_goal()

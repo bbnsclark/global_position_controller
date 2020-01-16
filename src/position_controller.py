@@ -79,11 +79,15 @@ class PositionController:
 
         return self.goal, distance
 
-    def get_recovery_goal(self):
+    def get_recovery_goal(self, init, target):
 
         goal = PoseStamped()
 
-        quaternion = tf.transformations.quaternion_from_euler(0.0, 0.0, math.pi)
+        x, y, _ = self.utilities.calculate_distance(init, target)
+
+        theta = (2.0 * math.pi - (target.heading - init.heading))
+
+        quaternion = tf.transformations.quaternion_from_euler(0.0, 0.0, theta)
 
         goal.header.frame_id = "base_link"
 
