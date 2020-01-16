@@ -3,7 +3,6 @@
 import utm
 import time
 import math
-from global_pose import GlobalPose
 from utilities import Utilities
 
 import tf
@@ -62,12 +61,6 @@ class PositionController:
 
                 theta = (2.0 * math.pi - (target.heading - init.heading))
 
-        print('headings:')
-        print('init:')
-        print(init.heading)
-        print('target:')
-        print(theta) 
-
         quaternion = tf.transformations.quaternion_from_euler(0.0, 0.0, theta)
 
         self.goal.header.frame_id = "base_link"
@@ -85,5 +78,27 @@ class PositionController:
         self.goal.pose.orientation.w = quaternion[3]
 
         return self.goal, distance
+
+    def get_recovery_goal(self):
+
+        goal = PoseStamped()
+
+        quaternion = tf.transformations.quaternion_from_euler(0.0, 0.0, math.pi)
+
+        goal.header.frame_id = "base_link"
+
+        goal.pose.position.x = 0.0
+
+        goal.pose.position.y = 0.0
+
+        goal.pose.orientation.x = quaternion[0]
+
+        goal.pose.orientation.y = quaternion[1]
+
+        goal.pose.orientation.z = quaternion[2]
+
+        goal.pose.orientation.w = quaternion[3]
+
+        return goal
 
     

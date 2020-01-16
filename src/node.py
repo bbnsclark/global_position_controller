@@ -3,8 +3,8 @@
 import time
 import math
 import numpy as np
-from datetime import datetime
 from math import pi, cos, sin
+from datetime import datetime
 from utilities import Utilities
 from global_pose import GlobalPose
 from position_controller import PositionController
@@ -21,9 +21,22 @@ from gps_common.msg import GPSFix
 from geometry_msgs.msg import PoseStamped
 from sensor_msgs.msg import LaserScan
 from sensor_msgs.msg import NavSatFix
+from std_srvs.srv import Empty, EmptyRequest
 from move_base_msgs.msg import MoveBaseAction
+from actionlib_msgs.msg import GoalStatusArray
 from geometry_msgs.msg import Quaternion, Twist
 from global_position_controller.srv import GoalPosition, GoalPositionResponse
+
+PENDING         = 0   # The goal has yet to be processed by the action server
+ACTIVE          = 1   # The goal is currently being processed by the action server
+PREEMPTED       = 2   # The goal received a cancel request after it started executing and has since completed its execution (Terminal State)
+SUCCEEDED       = 3   # The goal was achieved successfully by the action server (Terminal State)
+ABORTED         = 4   # The goal was aborted during execution by the action server due to some failure (Terminal State)
+REJECTED        = 5   # The goal was rejected by the action server without being processed, because the goal was unattainable or invalid (Terminal State)
+PREEMPTING      = 6   # The goal received a cancel request after it started executing and has not yet completed execution
+RECALLING       = 7   # The goal received a cancel request before it started executing, but the action server has not yet confirmed that the goal is canceled
+RECALLED        = 8   # The goal received a cancel request before it started executing and was successfully cancelled (Terminal State)
+LOST            = 9   # An action client can determine that a goal is LOST. This should not be sent over the wire by an action server
 
 class Node:
 
@@ -34,6 +47,8 @@ class Node:
         self.utilities = Utilities()
 
         self.pose = GlobalPose()
+
+        self.position = PoseStamped()
 
         self.target_pose = GlobalPose()
 
@@ -55,6 +70,24 @@ class Node:
 
         self.rate = 0.1
 
+        self.current_distance = 0.0
+
+        self.distance = 0.0
+
+        self.speed = 0.0
+
+        self.speed_time = 0.0
+
+        self.speed_time_span = 0.0
+
+        self.stuck = False
+
+        self.stuck_speed_threshold = 0.05
+
+        self.stuck_count = 0
+
+        self.state = PENDING
+
         self.sub_gps = rospy.Subscriber('gps_fix', GPSFix, self.gps_callback)
 
         self.sub_manage = rospy.Subscriber('manage_controller', String, self.manage_callback)
@@ -63,7 +96,15 @@ class Node:
 
         self.pub_goal = rospy.Publisher('move_base_simple/goal', PoseStamped, queue_size = 1)
 
+        self.sub_base = rospy.Subscriber('move_base/status', GoalStatusArray, self.base_callback)
+
+        self.sub_odom = rospy.Subscriber('odom_inertial', Odometry, self.odom_callback)
+
         self.client_goal = actionlib.SimpleActionClient('move_base', MoveBaseAction)
+
+        rospy.wait_for_service('/MOVE_GLOBAL/clear_costmaps')
+        
+        self.clear_costmaps_srv = rospy.ServiceProxy('/MOVE_GLOBAL/clear_costmaps', Empty)
 
         self.pub_check = rospy.Publisher('controller_check', Float64, queue_size = 1)
 
@@ -73,6 +114,17 @@ class Node:
     def manage_callback(self, msg):
         
         self.control_status = msg.data
+
+
+    def base_callback(self, msg):
+
+        if len(msg.status_list) > 0:
+
+            self.state = msg.status_list[-1].status
+
+        else:
+
+            self.state = PENDING
 
 
     def gps_callback(self, msg):
@@ -88,6 +140,36 @@ class Node:
         self.pub_check.publish(self.check_msg)
 
 
+    def odom_callback(self, msg):
+
+        current_linear_speed = math.sqrt(math.pow(msg.twist.twist.linear.x, 2) + math.pow(msg.twist.twist.linear.y, 2))
+
+        current_rotational_speed = msg.twist.twist.angular.z
+
+        current_speed = max(current_linear_speed, current_rotational_speed)
+
+        if current_speed <= self.stuck_speed_threshold:
+
+            self.speed_time = rospy.get_rostime().to_nsec() - self.speed_time
+
+            self.speed_time_span += self.speed_time
+
+        else:
+
+            self.speed_time = rospy.get_rostime().to_nsec()
+
+            self.speed_time_span = 0.0
+
+        
+        if self.speed_time_span >= 5.0 and self.state != PENDING and self.state != SUCCEEDED and self.state != PREEMPTED and self.state != ABORTED and self.state != REJECTED and self.state != RECALLED and self.state != LOST:
+
+            self.stuck = True
+
+        else:
+
+            self.stuck = False
+
+
     def goto_position_callback(self, msg):
 
         self.control_status = 'run'
@@ -98,14 +180,10 @@ class Node:
 
         self.target_pose.heading = msg.target_heading
 
-        print(self.target_pose.latitude)
-
-        print(self.target_pose.longitude)
-
-        distance = 2.0 * self.loop_threshold
+        self.distance = 2.0 * self.loop_threshold
 
         # now we implement a SUPER dumb time-base position control loop
-        while distance > self.loop_threshold:
+        while self.distance > self.loop_threshold:
 
             if self.control_status == 'stop':
                 
@@ -127,13 +205,46 @@ class Node:
             elif self.control_status == 'run':
 
                 # first we calculate the target global position in local body frame
-                self.new_goal, distance = self.controller.calculate_new_goal(self.pose, self.target_pose)
-                
-                # publish the goal and...
-                self.pub_goal.publish(self.new_goal)
+                self.new_goal, self.distance = self.controller.calculate_new_goal(self.pose, self.target_pose)
 
-            # wait 5 seconds
-            time.sleep(2.0)
+                if self.stuck:
+
+                    rospy.logwarn("Robot is stuck")
+
+                    self.stuck_count += 1
+
+                    self.client_goal.cancel_goal()
+
+                    self.client_goal.cancel_all_goals()
+
+                    # if we are stuck in place, let's cancel all goals, and clear out costmap to try to recover
+                    self.clear_costmaps_srv(EmptyRequest())
+
+                    time.sleep(2.0)
+
+                    rospy.logwarn('clear costmap recovery activated')
+
+                    if self.stuck_count > 5:
+
+                        rospy.logwarn('rotation recovery activated')
+
+                        self.controller.get_recovery_goal()
+
+                        self.stuck_count = 0
+
+                    time.sleep(3.0)
+
+
+                if math.fabs(self.distance - self.current_distance) >= self.send_threshold:
+
+                    self.pub_goal.publish(self.new_goal)
+
+                    self.current_distance = 0.0
+
+                    # wait 5 seconds
+                    time.sleep(2.0)
+
+                
 
         # once the platform has reached its goal we cancel all move_base goals
         self.client_goal.cancel_goal()
