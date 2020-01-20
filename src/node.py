@@ -182,6 +182,10 @@ class Node:
 
         self.distance = 2.0 * self.loop_threshold
 
+        self.stuck_count = 0
+
+        self.stuck_count = False
+
         # now we implement a SUPER dumb time-base position control loop
         while self.distance > self.loop_threshold:
 
