@@ -88,6 +88,8 @@ class Node:
 
         self.state = PENDING
 
+        self.pub_check = rospy.Publisher('controller_check', Float64, queue_size = 1)
+
         self.sub_gps = rospy.Subscriber('gps_fix', GPSFix, self.gps_callback)
 
         self.sub_manage = rospy.Subscriber('manage_controller', String, self.manage_callback)
@@ -105,8 +107,6 @@ class Node:
         rospy.wait_for_service('/MOVE_GLOBAL/clear_costmaps')
         
         self.clear_costmaps_srv = rospy.ServiceProxy('/MOVE_GLOBAL/clear_costmaps', Empty)
-
-        self.pub_check = rospy.Publisher('controller_check', Float64, queue_size = 1)
 
         rospy.loginfo('Starting global position controller...')
         
