@@ -104,9 +104,9 @@ class Node:
 
         self.client_goal = actionlib.SimpleActionClient('move_base', MoveBaseAction)
 
-        rospy.wait_for_service('/MOVE_GLOBAL/clear_costmaps')
+        rospy.wait_for_service('/MOVE/clear_costmaps')
         
-        self.clear_costmaps_srv = rospy.ServiceProxy('/MOVE_GLOBAL/clear_costmaps', Empty)
+        self.clear_costmaps_srv = rospy.ServiceProxy('/MOVE/clear_costmaps', Empty)
 
         rospy.loginfo('Starting global position controller...')
         
